@@ -3,13 +3,25 @@ import torch
 from PIL import Image
 from torch.autograd import Variable
 from mtcnn_pytorch.src.get_nets import PNet, RNet, ONet
-from mtcnn_pytorch.src.box_utils import nms, calibrate_box, get_image_boxes, convert_to_square
+from mtcnn_pytorch.src.box_utils import (
+    nms,
+    calibrate_box,
+    get_image_boxes,
+    convert_to_square,
+)
 from mtcnn_pytorch.src.first_stage import run_first_stage
-from mtcnn_pytorch.src.align_trans import get_reference_facial_points, warp_and_crop_face
+from mtcnn_pytorch.src.align_trans import (
+    get_reference_facial_points,
+    warp_and_crop_face,
+)
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = 'cpu'
+np_load_old = np.load
+np.load = lambda *a, **k: np_load_old(*a, allow_pickle=True, **k)
 
-class MTCNN():
+
+class MTCNN:
     def __init__(self):
         self.pnet = PNet().to(device)
         self.rnet = RNet().to(device)
@@ -17,14 +29,16 @@ class MTCNN():
         self.pnet.eval()
         self.rnet.eval()
         self.onet.eval()
-        self.refrence = get_reference_facial_points(default_square= True)
-        
+        self.refrence = get_reference_facial_points(default_square=True)
+
     def align(self, img):
         _, landmarks = self.detect_faces(img)
-        facial5points = [[landmarks[0][j],landmarks[0][j+5]] for j in range(5)]
-        warped_face = warp_and_crop_face(np.array(img), facial5points, self.refrence, crop_size=(112,112))
+        facial5points = [[landmarks[0][j], landmarks[0][j + 5]] for j in range(5)]
+        warped_face = warp_and_crop_face(
+            np.array(img), facial5points, self.refrence, crop_size=(112, 112)
+        )
         return Image.fromarray(warped_face)
-    
+
     def align_multi(self, img, limit=None, min_face_size=30.0):
         boxes, landmarks = self.detect_faces(img, min_face_size)
         if limit:
@@ -32,14 +46,20 @@ class MTCNN():
             landmarks = landmarks[:limit]
         faces = []
         for landmark in landmarks:
-            facial5points = [[landmark[j],landmark[j+5]] for j in range(5)]
-            warped_face = warp_and_crop_face(np.array(img), facial5points, self.refrence, crop_size=(112,112))
+            facial5points = [[landmark[j], landmark[j + 5]] for j in range(5)]
+            warped_face = warp_and_crop_face(
+                np.array(img), facial5points, self.refrence, crop_size=(112, 112)
+            )
             faces.append(Image.fromarray(warped_face))
         return boxes, faces
 
-    def detect_faces(self, image, min_face_size=20.0,
-                     thresholds=[0.6, 0.7, 0.8],
-                     nms_thresholds=[0.7, 0.7, 0.7]):
+    def detect_faces(
+        self,
+        image,
+        min_face_size=20.0,
+        thresholds=[0.6, 0.7, 0.8],
+        nms_thresholds=[0.7, 0.7, 0.7],
+    ):
         """
         Arguments:
             image: an instance of PIL.Image.
@@ -65,12 +85,12 @@ class MTCNN():
         # scales the image so that
         # minimum size that we can detect equals to
         # minimum face size that we want to detect
-        m = min_detection_size/min_face_size
+        m = min_detection_size / min_face_size
         min_length *= m
 
         factor_count = 0
         while min_length > min_detection_size:
-            scales.append(m*factor**factor_count)
+            scales.append(m * factor ** factor_count)
             min_length *= factor
             factor_count += 1
 
@@ -82,7 +102,9 @@ class MTCNN():
         with torch.no_grad():
             # run P-Net on different scales
             for s in scales:
-                boxes = run_first_stage(image, self.pnet, scale=s, threshold=thresholds[0])
+                boxes = run_first_stage(
+                    image, self.pnet, scale=s, threshold=thresholds[0]
+                )
                 bounding_boxes.append(boxes)
 
             # collect boxes (and offsets, and scores) from different scales
@@ -93,7 +115,9 @@ class MTCNN():
             bounding_boxes = bounding_boxes[keep]
 
             # use offsets predicted by pnet to transform bounding boxes
-            bounding_boxes = calibrate_box(bounding_boxes[:, 0:5], bounding_boxes[:, 5:])
+            bounding_boxes = calibrate_box(
+                bounding_boxes[:, 0:5], bounding_boxes[:, 5:]
+            )
             # shape [n_boxes, 5]
 
             bounding_boxes = convert_to_square(bounding_boxes)
@@ -122,7 +146,7 @@ class MTCNN():
             # STAGE 3
 
             img_boxes = get_image_boxes(bounding_boxes, image, size=48)
-            if len(img_boxes) == 0: 
+            if len(img_boxes) == 0:
                 return [], []
             img_boxes = torch.FloatTensor(img_boxes).to(device)
             output = self.onet(img_boxes)
@@ -140,11 +164,15 @@ class MTCNN():
             width = bounding_boxes[:, 2] - bounding_boxes[:, 0] + 1.0
             height = bounding_boxes[:, 3] - bounding_boxes[:, 1] + 1.0
             xmin, ymin = bounding_boxes[:, 0], bounding_boxes[:, 1]
-            landmarks[:, 0:5] = np.expand_dims(xmin, 1) + np.expand_dims(width, 1)*landmarks[:, 0:5]
-            landmarks[:, 5:10] = np.expand_dims(ymin, 1) + np.expand_dims(height, 1)*landmarks[:, 5:10]
+            landmarks[:, 0:5] = (
+                np.expand_dims(xmin, 1) + np.expand_dims(width, 1) * landmarks[:, 0:5]
+            )
+            landmarks[:, 5:10] = (
+                np.expand_dims(ymin, 1) + np.expand_dims(height, 1) * landmarks[:, 5:10]
+            )
 
             bounding_boxes = calibrate_box(bounding_boxes, offsets)
-            keep = nms(bounding_boxes, nms_thresholds[2], mode='min')
+            keep = nms(bounding_boxes, nms_thresholds[2], mode="min")
             bounding_boxes = bounding_boxes[keep]
             landmarks = landmarks[keep]
 

@@ -2,7 +2,7 @@
 
 Pytorch0.4.1 codes for InsightFace
 
-------
+---
 
 ## 1. Intro
 
@@ -11,7 +11,7 @@ Pytorch0.4.1 codes for InsightFace
 - Codes for transform MXNET data records in Insightface[(github)](https://github.com/deepinsight/insightface) to Image Datafolders are provided
 - Pretrained models are posted, include the [MobileFacenet](https://arxiv.org/abs/1804.07573) and IR-SE50 in the original paper
 
-------
+---
 
 ## 2. Pretrained Models & Performance
 
@@ -86,7 +86,7 @@ faces_emore/
             ---> vgg2_fp
 ```
 
-------
+---
 
 ### 3.2 detect over camera:
 
@@ -97,15 +97,7 @@ faces_emore/
 - [Mobilefacenet @ BaiduNetDisk](https://pan.baidu.com/s/1hqNNkcAjQOSxUjofboN6qg)
 - [Mobilefacenet @ OneDrive](https://1drv.ms/u/s!AhMqVPD44cDOhkSMHodSH4rhfb5u)
 
-- 2 to take a picture, run
-
-  ```
-  python take_pic.py -n name
-  ```
-
-  press q to take a picture, it will only capture 1 highest possibility face if more than 1 person appear in the camera
-
-- 3 or you can put any preexisting photo into the facebank directory, the file structure is as following:
+- 1. or you can put any preexisting photo into the facebank directory, the file structure is as following:
 
 ```
 - facebank/
@@ -121,41 +113,30 @@ faces_emore/
     if more than 1 image appears in the directory, average embedding will be calculated
 ```
 
-- 4 to start
+- 1. To update known faces
 
   ```
-  python face_verify.py 
+  python face_verify.py -c -i ../dataset/9.jpg
   ```
 
-- - -
+- 1. To test
 
-### 3.3 detect over video:
+  ```
+  python face_verify.py -c -i ../dataset/9.jpg
+  ```
 
-```
-​```
-python infer_on_video.py -f [video file name] -s [save file name]
-​```
-```
+---
 
-the video file should be inside the data/face_bank folder
+### 3.3 Training:
 
-- Video Detection Demo [@Youtube](https://www.youtube.com/watch?v=6r9RCRmxtHE)
-
-### 3.4 Training:
-
-```
+````
 ​```
 python train.py -b [batch_size] -lr [learning rate] -e [epochs]
 
 # python train.py -net mobilefacenet -b 200 -w 4
 ​```
-```
+````
 
-## 4. References 
+## 4. References
 
 - This repo is mainly inspired by [deepinsight/insightface](https://github.com/deepinsight/insightface) and [InsightFace_TF](https://github.com/auroua/InsightFace_TF)
-
-## PS
-
-- PRs are welcome, in case that I don't have the resource to train some large models like the 100 and 151 layers model
-- Email : treb1en@qq.com
