@@ -6,9 +6,7 @@ from torch import optim
 import numpy as np
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
-from matplotlib import pyplot as plt
 
-plt.switch_backend("agg")
 from utils import get_time, gen_plot, hflip_batch, separate_bn_paras
 from PIL import Image
 from torchvision import transforms as trans
