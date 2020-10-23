@@ -4,9 +4,9 @@ import numpy as np
 
 import io
 from torchvision import transforms as trans
-from data.data_pipe import de_preprocess
+from .data.data_pipe import de_preprocess
 import torch
-from model import l2_norm
+from .model import l2_norm
 import pdb
 import cv2
 

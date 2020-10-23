@@ -3,9 +3,13 @@ from pathlib import Path
 import torch
 from torch.nn import CrossEntropyLoss
 from torchvision import transforms as trans
+import os, inspect
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+print("# Arcface path: ", currentdir)
 
 
-def get_config(training=True, module_path=Path(".")):
+def get_config(training=True, module_path=Path(currentdir)):
     conf = edict()
     conf.data_path = module_path / "data"
     conf.work_path = module_path / "work_space"

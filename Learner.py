@@ -1,13 +1,13 @@
-from data.data_pipe import de_preprocess, get_train_loader, get_val_data
-from model import Backbone, Arcface, MobileFaceNet, Am_softmax, l2_norm
-from verifacation import evaluate
+from .data.data_pipe import de_preprocess, get_train_loader, get_val_data
+from .model import Backbone, Arcface, MobileFaceNet, Am_softmax, l2_norm
+from .verifacation import evaluate
 import torch
 from torch import optim
 import numpy as np
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
-from utils import get_time, gen_plot, hflip_batch, separate_bn_paras
+from .utils import get_time, gen_plot, hflip_batch, separate_bn_paras
 from PIL import Image
 from torchvision import transforms as trans
 import math
