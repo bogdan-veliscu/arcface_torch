@@ -18,7 +18,7 @@ class face_learner(object):
         print(conf)
         if conf.use_mobilfacenet:
             self.model = MobileFaceNet(conf.embedding_size).to(conf.device)
-            print("MobileFaceNet model generated")
+            print("MobileFaceNet model loaded")
         else:
             self.model = Backbone(conf.net_depth, conf.drop_ratio, conf.net_mode).to(
                 conf.device
