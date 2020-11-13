@@ -1,8 +1,11 @@
 import numpy as np
 import torch
 from PIL import Image
-from torch.autograd import Variable
-from .mtcnn_pytorch.src.get_nets import PNet, RNet, ONet
+
+from .mtcnn_pytorch.src.align_trans import (
+    get_reference_facial_points,
+    warp_and_crop_face,
+)
 from .mtcnn_pytorch.src.box_utils import (
     nms,
     calibrate_box,
@@ -10,15 +13,13 @@ from .mtcnn_pytorch.src.box_utils import (
     convert_to_square,
 )
 from .mtcnn_pytorch.src.first_stage import run_first_stage
-from .mtcnn_pytorch.src.align_trans import (
-    get_reference_facial_points,
-    warp_and_crop_face,
-)
+from .mtcnn_pytorch.src.get_nets import PNet, RNet, ONet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = 'cpu'
 np_load_old = np.load
-np.load = lambda *a, **k: np_load_old(*a, allow_pickle=True, **k)
+np.load = lambda *args, **kwargs: np_load_old(*args, allow_pickle=True,
+                                              **{k: v for k, v in kwargs.items() if k != 'allow_pickle'})
 
 
 class MTCNN:
