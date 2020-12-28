@@ -332,9 +332,11 @@ class face_learner(object):
 
         visitor_confidence = minimum
 
-        if len(visitor_embs) >  0:
-            # when not found in the pretrained facebank check in the cached faces
-            diff = source_embs.unsqueeze(-1) - torch.from_numpy(visitor_embs).transpose(1, 0).unsqueeze(0)
+        if len(visitor_embs) > 0:
+            # when not found in the pretrained facebank check in the cached visitor faces
+            diff = source_embs.unsqueeze(-1) - torch.from_numpy(visitor_embs).transpose(
+                1, 0
+            ).unsqueeze(0)
             dist = torch.sum(torch.pow(diff, 2), dim=1)
             visitor_confidence, visitor_idx = torch.min(dist, dim=1)
             visitor_idx[visitor_confidence > self.threshold] = -1
@@ -342,14 +344,17 @@ class face_learner(object):
             if visitor_idx.item() == -1:
                 # if not in the cached visitors face bank append the embeding
                 visitor_idx[visitor_confidence > self.threshold] = len(visitor_embs)
-                visitor_embs = np.concatenate((visitor_embs, source_embs.detach().numpy()), axis=0)
+                visitor_embs = np.concatenate(
+                    (visitor_embs, source_embs.detach().numpy()), axis=0
+                )
         else:
-            visitor_idx = 1 # first visitor will have index 1
-            visitor_embs = np.concatenate((visitor_embs, source_embs.detach().numpy()), axis=0)
-
+            visitor_idx = 1  # first visitor will have index 1
+            visitor_embs = np.concatenate(
+                (visitor_embs, source_embs.detach().numpy()), axis=0
+            )
 
         if min_idx.item() == -1:
             known = False
-            min_idx,minimum = visitor_idx, visitor_confidence
+            min_idx, minimum = visitor_idx, visitor_confidence
 
         return min_idx, minimum, known, visitor_embs
