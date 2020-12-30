@@ -348,7 +348,7 @@ class face_learner(object):
                     (visitor_embs, source_embs.detach().numpy()), axis=0
                 )
         else:
-            visitor_idx = 1  # first visitor will have index 1
+            visitor_idx = torch.tensor(([0]), dtype=torch.int32) # first visitor will have index 0 
             visitor_embs = np.concatenate(
                 (visitor_embs, source_embs.detach().numpy()), axis=0
             )
