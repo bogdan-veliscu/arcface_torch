@@ -7,7 +7,6 @@ requirements = ["numpy",
                 "Pillow",
                 "torch",
                 "torchvision",
-                "tqdn",
                 "easydict",
                 "opencv-python"]
 
@@ -20,5 +19,14 @@ setuptools.setup(
     url="https://github.com/tomasic/arcface_torch",
     package_data={
         "": ["*.txt", "*.rst", "*.pth", "*.npy", "*.log"],
-    }
+    },
+    package_dir={"": "."},
+    packages=setuptools.find_packages(),
+    install_requires=requirements,
+    python_requires=">=3.8",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
 )
