@@ -18,7 +18,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/tomasic/arcface_torch",
     package_data={
-        "": ["*.txt", "*.rst", "*.pth", "*.npy", "*.log", "work_space/save/*.pth"],
+        "": ["*.txt", "*.rst", "*.pth",  "data/facebank/*.*", "mtcnn_pytorch/src/weights/*.*", "*.npy", "*.log", "work_space/save/*.pth"],
     },
     package_dir={"": "."},
     packages=setuptools.find_packages(),
