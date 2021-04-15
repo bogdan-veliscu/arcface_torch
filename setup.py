@@ -18,7 +18,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/tomasic/arcface_torch",
     package_data={
-        "": ["*.txt", "*.rst", "*.pth", "*.npy", "*.log"],
+        "": ["*.txt", "*.rst", "*.pth", "*.npy", "*.log", "work_space/save/*.pth"],
     },
     package_dir={"": "."},
     packages=setuptools.find_packages(),
@@ -29,4 +29,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    include_package_data=True,
 )
